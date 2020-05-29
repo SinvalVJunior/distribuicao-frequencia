@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap');
+.navbar {
+    background-color: rgba(168, 197, 236, 0.781);
+    height: 80px;
+    font: 400 100px Dancing Script;
+
+}
+.name-prof {
+    max-width: 100px;
+    text-align: right;
+}
+.formulario {
+    padding-top: 120px;
+}
+.search-results {
+    font: 400 30px Roboto;
+
+}
