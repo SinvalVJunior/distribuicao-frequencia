@@ -66,7 +66,6 @@ export default function Formulario() {
         let sum_numerador = 0;
         for (let i = 0; i < fi_input.length; i++) {
             sum_numerador += ((Xi[i]- media)**2) * parseFloat(fi_input[i]);
-            console.log(sum_numerador);
         }
         setDesvio_Padrao(Math.sqrt(sum_numerador/(sum_FI-1)));
         setShowResults_Desvio_Padrao(true);
