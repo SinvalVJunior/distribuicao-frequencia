@@ -6,6 +6,8 @@ export default function Formulario() {
 
     const [showResults_Mediana, setShowResults_Mediana] = React.useState(false);
     const [showResults_Desvio_Padrao, setShowResults_Desvio_Padrao] = React.useState(false);
+    const [showQuartis, setShowQuartis] = React.useState(false);
+
     const [desvio_padrao, setDesvio_Padrao] = React.useState(0);
     const [mediana, setMediana] = React.useState(0);
     const [limite_inferior, setLI] = React.useState(0);
@@ -15,14 +17,14 @@ export default function Formulario() {
     const [Fmd, setFmd] = React.useState(0);
     const [lista, setLista] = React.useState(["Resultados Salvos:"]);
 
-    async function calcularMediana(fi_input, classes_input) {
+    async function calcularQuartis(fi_input, classes_input, quartil) {
         let fac = [];
         let sum = 0;
         for (let i = 0; i < fi_input.length; i++) {
             sum += parseFloat(fi_input[i]);
             fac.push(sum);
         }
-        let valor_medio = fac[fac.length - 1] / 2;
+        let valor_medio = fac[fac.length - 1] * (quartil * (1/4));
         let classe_mediana = 0;
         for (let i = 0; i < fac.length; i++) {
             if (fac[i] >= valor_medio) {
@@ -80,6 +82,10 @@ export default function Formulario() {
         let classes_input = event.target.elements.formClasses.value.split(",");
         let fi_input = event.target.elements.formFI.value.split(",");
         let selection = event.target.elements.calculo.value;
+        let quartil;
+        if (selection === "Quartis") {
+            quartil = parseInt(event.target.elements.quartis.value[0]);
+        }
         let variacaoX = event.target.elements.variacaoX.value.split("-");
         let submited = event.nativeEvent.submitter.name;
         let result;
@@ -87,8 +93,8 @@ export default function Formulario() {
         let limit = 0;
         let respostas = lista.slice();
 
-        classes_input = "0-20,20-40,40-60,60-80".split(",");
-        fi_input = "4,30,12,x".split(",");
+        //classes_input = "0-20,20-40,40-60,60-80".split(",");
+        //fi_input = "4,30,12,x".split(",");
 
 
         for (let i = 0; i < classes_input.length; i++) {
@@ -107,10 +113,9 @@ export default function Formulario() {
                 }
             }
             
-            
-            if (selection === "Mediana") {
+            if (selection === "Quartis") {
                 setShowResults_Desvio_Padrao(false);
-                result = await calcularMediana(fi_aux, classes_input)
+                result = await calcularQuartis(fi_aux, classes_input, quartil);
             }
             else if (selection === "Desvio Padrão") {
                 setShowResults_Mediana(false);
@@ -126,6 +131,26 @@ export default function Formulario() {
             setLista(respostas);
         }
     }
+
+    const handleSelect = (e) => {
+        if(e.target.value === "Quartis") {
+            setShowQuartis(true);
+        }
+        else{
+            setShowQuartis(false);
+        }
+    }
+
+    const NumeroQuartis = () => (
+        <Form.Group controlId="quartis">
+                            <Form.Label>Selecione o quartil desejado</Form.Label>
+                            <Form.Control as="select" custom>
+                                <option>1</option>
+                                <option>2(Mediana)</option>
+                                <option>3</option>
+                            </Form.Control>
+        </Form.Group>
+    )
 
     const ResultsMediana = () => (
         <div id="results" className="search-results">
@@ -147,11 +172,12 @@ export default function Formulario() {
                     <Form onSubmit={handleSubmit}>
                         <Form.Group controlId="calculo">
                             <Form.Label>Selecione o cálculo desejado</Form.Label>
-                            <Form.Control as="select" custom>
+                            <Form.Control onChange={handleSelect} as="select" custom>
                                 <option>Desvio Padrão</option>
-                                <option>Mediana</option>
+                                <option>Quartis</option>
                             </Form.Control>
                         </Form.Group>
+                        {showQuartis ? <NumeroQuartis /> : null}
                         <Form.Group controlId="formClasses">
                             <Form.Label>Classes</Form.Label>
                             <Form.Control type="text" placeholder="Digite os intervalos das classes separados por - e separe com vírgula(,) " />
