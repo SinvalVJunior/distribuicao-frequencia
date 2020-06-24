@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Form, Container, Row, Col, Button } from "react-bootstrap";
+import { Form, Container, Row, Col, Button, ListGroup } from "react-bootstrap";
 
 export default function Formulario() {
 
@@ -13,7 +13,7 @@ export default function Formulario() {
     const [medium_value, setMDV] = React.useState(0);
     const [Fant, setFant] = React.useState(0);
     const [Fmd, setFmd] = React.useState(0);
-
+    const [lista, setLista] = React.useState(["Resultados Salvos:"]);
 
     async function calcularMediana(fi_input, classes_input) {
         let fac = [];
@@ -40,6 +40,8 @@ export default function Formulario() {
         setMediana(parseFloat(classes_input[classe_mediana][0]) + ((valor_medio - fac[classe_mediana - 1]) / fi_input[classe_mediana]) * (parseFloat(classes_input[classe_mediana][1]) - parseFloat(classes_input[classe_mediana][0])));
 
         setShowResults_Mediana(true);
+
+        return parseFloat(classes_input[classe_mediana][0]) + ((valor_medio - fac[classe_mediana - 1]) / fi_input[classe_mediana]) * (parseFloat(classes_input[classe_mediana][1]) - parseFloat(classes_input[classe_mediana][0]));
     }
 
     async function calcularDesvio_Padrao(fi_input, classes_input) {
@@ -52,7 +54,7 @@ export default function Formulario() {
         let Xi = [];
 
         for (let i = 0; i < classes_input.length; i++) {
-            Xi[i] = (parseFloat(classes_input[i][1])+ parseFloat(classes_input[i][0]))/2;
+            Xi[i] = (parseFloat(classes_input[i][1]) + parseFloat(classes_input[i][0])) / 2;
         }
 
         let sum_XIFI = 0;
@@ -61,30 +63,67 @@ export default function Formulario() {
             sum_XIFI += parseFloat(fi_input[i]) * Xi[i]
         }
 
-        const media = sum_XIFI/sum_FI;
+        const media = sum_XIFI / sum_FI;
 
         let sum_numerador = 0;
         for (let i = 0; i < fi_input.length; i++) {
-            sum_numerador += ((Xi[i]- media)**2) * parseFloat(fi_input[i]);
+            sum_numerador += ((Xi[i] - media) ** 2) * parseFloat(fi_input[i]);
         }
-        setDesvio_Padrao(Math.sqrt(sum_numerador/(sum_FI-1)));
+        setDesvio_Padrao(Math.sqrt(sum_numerador / (sum_FI - 1)));
         setShowResults_Desvio_Padrao(true);
+        return Math.sqrt(sum_numerador / (sum_FI - 1));
     }
+
+
     async function handleSubmit(event) {
         event.preventDefault();
         let classes_input = event.target.elements.formClasses.value.split(",");
         let fi_input = event.target.elements.formFI.value.split(",");
         let selection = event.target.elements.calculo.value;
+        let variacaoX = event.target.elements.variacaoX.value.split("-");
+        let submited = event.nativeEvent.submitter.name;
+        let result;
+        let start = 0;
+        let limit = 0;
+        let respostas = lista.slice();
+
+        classes_input = "0-20,20-40,40-60,60-80".split(",");
+        fi_input = "4,30,12,x".split(",");
+
+
         for (let i = 0; i < classes_input.length; i++) {
             classes_input[i] = classes_input[i].split("-");
         }
-        if (selection === "Mediana") {
-            setShowResults_Desvio_Padrao(false);
-            calcularMediana(fi_input, classes_input)
+    
+        if (variacaoX[0] !== "") {
+            start = parseInt(variacaoX[0]);
+            limit = parseInt(variacaoX[1]);
         }
-        else if (selection === "Desvio Padrão") {
-            setShowResults_Mediana(false);
-            calcularDesvio_Padrao(fi_input, classes_input);
+        for (let k = start; k <= limit; k++) {
+            let fi_aux = fi_input.slice();
+            for (let i = 0; i < fi_aux.length; i++) {
+                if (fi_aux[i] === "x" | fi_aux[i] === "X") {
+                    fi_aux[i] = `${k}`;
+                }
+            }
+            
+            
+            if (selection === "Mediana") {
+                setShowResults_Desvio_Padrao(false);
+                result = await calcularMediana(fi_aux, classes_input)
+            }
+            else if (selection === "Desvio Padrão") {
+                setShowResults_Mediana(false);
+                result = await calcularDesvio_Padrao(fi_aux, classes_input);
+            }
+        
+            respostas.push(`${respostas.length} - ${selection}:     ${result}`);
+
+            
+        }
+
+        if (submited === "calcular-salvar") {
+            setLista(respostas);
         }
     }
 
@@ -127,10 +166,23 @@ export default function Formulario() {
                                 Exemplo: 20,30,40,50,80
                             </Form.Text>
                         </Form.Group>
+                        <Form.Group controlId="variacaoX">
+                            <Form.Label>Selecione a variacao da variavel X, caso tenha utilizado</Form.Label>
+                            <Form.Control type="text" placeholder="Digite o intervalo separado por - " />
+                            <Form.Text className="text-muted">
+                                Exemplo para que x varie de 1 até 20: 1-20
+                            </Form.Text>
+                        </Form.Group>
 
 
-                        <Button variant="primary" type="submit">
+
+
+                        <Button variant="secondary" type="submit" name="calcular" value="calcular">
                             Calcular
+                        </Button>
+
+                        <Button variant="primary" type="submit" name="calcular-salvar" value="calcular-salvar">
+                            Calcular e Salvar
                         </Button>
                     </Form>
                 </Col>
@@ -139,6 +191,14 @@ export default function Formulario() {
                     {showResults_Desvio_Padrao ? <ResultsDesvioPadrao /> : null}
 
                 </Col>
+            </Row>
+            <Row>
+                <ListGroup className="lista">
+                    {lista.map(item => (
+                        <ListGroup.Item key={item}>{item}</ListGroup.Item>
+                    ))
+                    }
+                </ListGroup>
             </Row>
 
         </Container>
