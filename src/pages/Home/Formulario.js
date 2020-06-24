@@ -24,7 +24,7 @@ export default function Formulario() {
             sum += parseFloat(fi_input[i]);
             fac.push(sum);
         }
-        let valor_medio = fac[fac.length - 1] * (quartil * (1/4));
+        let valor_medio = fac[fac.length - 1] * (quartil * (1 / 4));
         let classe_mediana = 0;
         for (let i = 0; i < fac.length; i++) {
             if (fac[i] >= valor_medio) {
@@ -100,7 +100,7 @@ export default function Formulario() {
         for (let i = 0; i < classes_input.length; i++) {
             classes_input[i] = classes_input[i].split("-");
         }
-    
+
         if (variacaoX[0] !== "") {
             start = parseInt(variacaoX[0]);
             limit = parseInt(variacaoX[1]);
@@ -112,7 +112,7 @@ export default function Formulario() {
                     fi_aux[i] = `${k}`;
                 }
             }
-            
+
             if (selection === "Quartis") {
                 setShowResults_Desvio_Padrao(false);
                 result = await calcularQuartis(fi_aux, classes_input, quartil);
@@ -121,10 +121,10 @@ export default function Formulario() {
                 setShowResults_Mediana(false);
                 result = await calcularDesvio_Padrao(fi_aux, classes_input);
             }
-        
+
             respostas.push(`${respostas.length} - ${selection}:     ${result}`);
 
-            
+
         }
 
         if (submited === "calcular-salvar") {
@@ -133,22 +133,22 @@ export default function Formulario() {
     }
 
     const handleSelect = (e) => {
-        if(e.target.value === "Quartis") {
+        if (e.target.value === "Quartis") {
             setShowQuartis(true);
         }
-        else{
+        else {
             setShowQuartis(false);
         }
     }
 
     const NumeroQuartis = () => (
         <Form.Group controlId="quartis">
-                            <Form.Label>Selecione o quartil desejado</Form.Label>
-                            <Form.Control as="select" custom>
-                                <option>1</option>
-                                <option>2(Mediana)</option>
-                                <option>3</option>
-                            </Form.Control>
+            <Form.Label>Selecione o quartil desejado</Form.Label>
+            <Form.Control as="select" custom>
+                <option>1</option>
+                <option>2(Mediana)</option>
+                <option>3</option>
+            </Form.Control>
         </Form.Group>
     )
 
@@ -165,6 +165,24 @@ export default function Formulario() {
         </div>
     )
 
+    const FazerDownload = () => {
+        console.log(lista);
+        let rows1 = [];
+        for(let i = 1; i < lista.length; i++) {
+            rows1.push(lista[i].split("     "));
+        }
+        
+
+        let csvContent = "data:text/csv;charset=utf-8,"
+            + rows1.map(e => e.join(",")).join("\n");
+        var encodedUri = encodeURI(csvContent);
+        var link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "respostas.csv");
+        document.body.appendChild(link); // Required for FF
+
+        link.click(); // This will download the data file named "my_data.csv".
+    }
     return (
         <Container className="formulario">
             <Row>
@@ -199,10 +217,6 @@ export default function Formulario() {
                                 Exemplo para que x varie de 1 até 20: 1-20
                             </Form.Text>
                         </Form.Group>
-
-
-
-
                         <Button variant="secondary" type="submit" name="calcular" value="calcular">
                             Calcular
                         </Button>
@@ -224,7 +238,11 @@ export default function Formulario() {
                         <ListGroup.Item key={item}>{item}</ListGroup.Item>
                     ))
                     }
+                    <Button onClick={FazerDownload} variant="primary">
+                        Download
+                    </Button>
                 </ListGroup>
+
             </Row>
 
         </Container>
