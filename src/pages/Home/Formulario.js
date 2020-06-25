@@ -154,9 +154,9 @@ export default function Formulario() {
 
     const ResultsMediana = () => (
         <div id="results" className="search-results">
-            <h4>Mediana = {mediana}</h4>
+            <h4>Resultado = {mediana}</h4>
 
-            <h4>Fórmula: Md = {limite_inferior} + (({medium_value} - {Fant}) / {Fmd}) x {comprimento}</h4>
+            <h4>Fórmula: Q = {limite_inferior} + (({medium_value} - {Fant}) / {Fmd}) x {comprimento}</h4>
         </div>
     )
     const ResultsDesvioPadrao = () => (
