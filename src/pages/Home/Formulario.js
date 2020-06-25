@@ -183,6 +183,10 @@ export default function Formulario() {
 
         link.click(); // This will download the data file named "my_data.csv".
     }
+
+    const resetar = () => {
+        setLista([]);
+    }
     return (
         <Container className="formulario">
             <Row>
@@ -223,6 +227,9 @@ export default function Formulario() {
 
                         <Button variant="primary" type="submit" name="calcular-salvar" value="calcular-salvar">
                             Calcular e Salvar
+                        </Button>
+                        <Button onClick={resetar} variant="danger" name="resetar">
+                            Resetar
                         </Button>
                     </Form>
                 </Col>
