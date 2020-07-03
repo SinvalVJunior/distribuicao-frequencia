@@ -211,7 +211,7 @@ export default function Formulario() {
                             <Form.Label>Frequencia Absoluta (FI)</Form.Label>
                             <Form.Control type="text" placeholder="Digite os valores separados por vírgula " />
                             <Form.Text className="text-muted">
-                                Exemplo: 20,30,40,50,80
+                                Exemplo: 20,30,40,50
                             </Form.Text>
                         </Form.Group>
                         <Form.Group controlId="variacaoX">
